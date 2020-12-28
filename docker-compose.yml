@@ -1,0 +1,38 @@
+version: "3.3"
+
+networks:
+  pvm_network:
+    driver: bridge
+
+services:
+    backend:
+      build:
+        context: ./docker
+        dockerfile: DockerFile_backend
+      networks:
+        - pvm_network
+      command: python3 /home/pvm/backend/app.py
+      volumes:
+        - /home/evgeniy/computer/lab/pvm/backend:/home/pvm/backend
+      ports:
+        - "5000:5000"
+      expose:
+        - "5000"
+      env_file:
+        - /home/evgeniy/computer/lab/pvm/backend/settings.ini
+    frontend:
+      build:
+        context: ./docker
+        dockerfile: DockerFile_frontend
+      networks:
+        - pvm_network
+      command: >
+        bash -c "cd /home/pvm/frontend/pvm_client && npm install && npm run dev"
+      volumes:
+        - /home/evgeniy/computer/lab/pvm/frontend:/home/pvm/frontend
+      ports:
+        - "8080:8080"
+      expose:
+        - "8080"
+      env_file:
+        - /home/evgeniy/computer/lab/pvm/backend/settings.ini

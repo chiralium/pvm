@@ -1,0 +1,12 @@
+FROM ubuntu:latest
+
+RUN apt update -y && \
+    apt upgrade -y && \
+    apt install python3 -y && \
+    apt install python3-pip -y
+
+RUN mkdir /home/pvm
+RUN mkdir /home/pvm/backend
+COPY requirements.txt /home/pvm/backend
+WORKDIR /home/pvm/backend
+RUN pip3 install -r requirements.txt
