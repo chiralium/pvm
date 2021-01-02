@@ -2,6 +2,8 @@ import os, time
 from flask import Flask
 from flask_cors import CORS, cross_origin
 
+from mongodb import MongoDB
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -18,6 +20,13 @@ def index():
 def api_time():
     return {
         'time': time.time()
+    }
+
+@app.route('/api/fetch')
+def api_fetch():
+    mongo = MongoDB()
+    return {
+        'db': str(mongo)
     }
 
 app.run(
