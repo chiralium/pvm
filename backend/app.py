@@ -6,6 +6,7 @@ from mongodb import MongoDB
 
 app = Flask(__name__)
 cors = CORS(app)
+mongo = MongoDB()
 
 @app.route('/')
 def index():
@@ -22,12 +23,12 @@ def api_time():
         'time': time.time()
     }
 
-@app.route('/api/fetch')
-def api_fetch():
-    mongo = MongoDB()
+@app.route('/api/fetch/<collection>')
+def api_fetch(collection):
     return {
-        'db': str(mongo)
+        collection: mongo.fetch(collection)
     }
+
 
 app.run(
     host=os.environ.get('API_HOST'),
