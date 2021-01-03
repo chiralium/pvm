@@ -7,13 +7,18 @@
       <div v-else class="badge" v-bind:class="{ 'bg-danger' : current_status === 'FAIL', 'bg-success' : current_status === 'OK' }">
         {{ current_status }}
       </div>
-      <div v-if="current_task" style="color: white">
+      <div v-if="current_task && current_status === 'OK'" style="color: white">
         {{ current_task }}
       </div>
     </div>
-    <div class="workflow">
+    <div v-if="current_status !== 'FAIL'" class="workflow">
       <tasks @set_task="set_task">
       </tasks>
+    </div>
+    <div v-else>
+      <div class="backend-error">
+        Backend is not responding! =(
+      </div>
     </div>
   </div>
 </template>
@@ -83,5 +88,14 @@ export default {
     height: 100%;
     display: block;
     text-align: center;
+  }
+
+  .backend-error {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18pt;
+    color: red;
   }
 </style>

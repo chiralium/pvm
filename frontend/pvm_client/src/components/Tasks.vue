@@ -38,6 +38,14 @@ export default {
         }
       );
 
+      console.log(
+         Object.assign(
+          {},
+          this.tasks,
+          new_task
+        )
+      );
+
       this.$set(
         this.tasks,
         new_task_indx,
@@ -57,7 +65,7 @@ export default {
     },
     add_task() {
       let task_object = {
-          id : this.tasks[ this.tasks.length - 1].id + 1,
+          id : this.tasks.length > 0 ? this.tasks[ this.tasks.length - 1].id + 1 : 0,
           title : '---',
           deadline_date : '30.12.2020',
           deadline_time : '00:00',
@@ -76,38 +84,7 @@ export default {
   },
   data: function () {
     return {
-      tasks : [
-        {
-          id : 0,
-          title : 'Test task #1',
-          deadline_date : '30.12.2020',
-          deadline_time : '00:00',
-          time : '6000',
-          stamp : '0',
-          priority : 1,
-          newest : false
-        },
-        {
-          id : 1,
-          title : 'Test task #2',
-          deadline_date : '30.12.2020',
-          deadline_time : '00:00',
-          time : '6000',
-          stamp : '50',
-          priority : 0,
-          newest : false
-        },
-        {
-          id : 2,
-          title : 'Test task #3',
-          deadline_date : '30.12.2020',
-          deadline_time : '00:00',
-          time : '6000',
-          stamp : '360',
-          priority : -1,
-          newest : false
-        },
-      ]
+      tasks : []
     }
   }
 }

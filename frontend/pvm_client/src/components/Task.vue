@@ -1,10 +1,10 @@
 <template>
   <div class="task_info"
        v-bind:class="{
-        'task_pri_null' : $props.priority === null,
-        'task_pri_high' : $props.priority === 1,
-        'task_pri_medium' : $props.priority === 0,
-        'task_pri_low' : $props.priority === -1
+        'task_pri_null' : $props.priority == null,
+        'task_pri_high' : $props.priority == 1,
+        'task_pri_medium' : $props.priority == 0,
+        'task_pri_low' : $props.priority == -1
        }"
   >
     <template v-if="$props.newest">
@@ -80,6 +80,7 @@ export default {
 
   methods : {
     save: function() {
+      console.log( this.new_task.priority );
       this.$emit(
         'save_task',
         this.new_task
