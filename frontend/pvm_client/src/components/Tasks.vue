@@ -1,5 +1,11 @@
 <template>
   <div>
+    <error
+      :error_name="this.error"
+      v-if="this.tasks_error"
+      @close_error_modal="error_close"
+    >
+    </error>
     <div v-for="task in tasks" :key="task.id">
       <task
         :id="task.id"
@@ -21,29 +27,29 @@
 
 <script>
 import Task from './Task.vue';
+import Error from "./Error";
+
 export default {
   name: "TasksView",
   components : {
-    'task' : Task
+    'task' : Task,
+    'error' : Error
   },
   props: [
     'current_task'
   ],
   methods : {
+    error_close : function() {
+      this.tasks_error = false;
+      this.error = '';
+    },
+
     save_task( new_task ) {
       let new_task_indx = this.tasks.findIndex(
         (e, i, a) => {
           if ( e.id === new_task.id ) return "hello world";
           return false;
         }
-      );
-
-      console.log(
-         Object.assign(
-          {},
-          this.tasks,
-          new_task
-        )
       );
 
       this.$set(
@@ -84,7 +90,39 @@ export default {
   },
   data: function () {
     return {
-      tasks : []
+      tasks : null,
+      tasks_error : false,
+      error : ''
+    }
+  },
+  mounted() {
+    let JWT = localStorage.getItem('_jwt');
+    if ( !JWT ) this.$router.push('/');
+    else {
+      fetch(
+        process.env.baseUrl + '/tasks',
+        {
+          method : 'GET',
+          headers : {
+            'Authorization' : JWT
+          }
+        }
+      ).then( response => response.json() )
+        .then(
+          ( data ) => {
+            if ( data.error ) throw data.error;
+            else if ( data.msg === 'Token has expired' ) {
+              localStorage.clear();
+              this.$router.push('/');
+            } else this.tasks = data.tasks;
+          }
+        )
+      .catch(
+        (error) => {
+          this.tasks_error = true;
+          this.error = error;
+        }
+      )
     }
   }
 }

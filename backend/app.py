@@ -76,7 +76,7 @@ def api_tasks():
     if user_id and user_id.get('$oid', None):
         tasks = Tasks.objects(uid=user_id.get('$oid'))
         return {
-            'dbg': tasks.to_json()
+            'tasks': json.loads(tasks.to_json())
         }
     else:
         return {
