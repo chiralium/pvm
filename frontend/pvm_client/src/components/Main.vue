@@ -12,8 +12,7 @@
       </div>
     </div>
     <div v-if="current_status !== 'FAIL'" class="workflow">
-      <tasks @set_task="set_task">
-      </tasks>
+      <tasks @set_task="set_task"></tasks>
     </div>
     <div v-else>
       <div class="backend-error">

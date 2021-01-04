@@ -32,9 +32,11 @@ def api_time():
 def api_login():
     credentials = request.json
 
-    if not credentials: return {
-        'error': 'Request body is empty or not valid!'
-    }
+    if not credentials: return Response(
+        response='{"error":"Request body is empty or Content-Type is not valid (must be application/json)"}',
+        status='500',
+        content_type='application/json'
+    )
 
     username = credentials.get('username', None)
     password = credentials.get('password', None)
@@ -43,7 +45,7 @@ def api_login():
         auth = Auth(username, password)
         if auth.jwt:
             return Response(
-                response="OK",
+                response='{"msg" : "OK"}',
                 status=200,
                 headers={
                     'Authorization': 'Bearer ' + auth.jwt
@@ -51,13 +53,17 @@ def api_login():
                 content_type='application/json'
             )
         else:
-            return {
-                'error': 'Invalid username or password!'
-            }
+            return Response(
+                response='{"error": "Invalid username or password!"}',
+                status=500,
+                content_type='application/json'
+            )
     else:
-        return {
-            'error': 'Need credentials info!'
-        }
+        return Response(
+            response='{"error": "Need credentials info!"}',
+            status=500,
+            content_type='application/json'
+        )
 
 
 @app.route('/api/tasks', methods=['GET'])
