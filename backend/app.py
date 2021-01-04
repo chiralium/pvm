@@ -45,7 +45,7 @@ def api_login():
         auth = Auth(username, password)
         if auth.jwt:
             return Response(
-                response='{"msg" : "OK"}',
+                response='{"JWT" : "%s"}' % ( 'Bearer ' + auth.jwt ),
                 status=200,
                 headers={
                     'Authorization': 'Bearer ' + auth.jwt

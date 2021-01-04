@@ -5,7 +5,7 @@
       v-if="this.auth_error"
       @close_error_modal="error_close">
     </error>
-    <div class="signup-form">
+    <div v-bind:class="[ is_loading ? 'signup-form load' : 'signup-form' ]">
       <input type="text" v-model="login" v-on:change="login_checker" placeholder="login"/>
       <div class="tips">{{ login_tips }}</div>
       <input type="password" v-model="password" v-on:change="password_checker" placeholder="password"/>
@@ -23,6 +23,9 @@ export default {
   components: {
     'error' : Error
   },
+  mounted() {
+    if ( localStorage.getItem('_jwt') ) this.$router.push('tasks');
+  },
   data: function() {
     return {
       login : '',
@@ -33,6 +36,8 @@ export default {
 
       auth_error : false,
       error : '',
+
+      is_loading: false
     }
   },
   methods: {
@@ -42,6 +47,7 @@ export default {
     },
     sign_in : function() {
       if (this.login_checker() && this.password_checker()) {
+        this.is_loading = true;
         fetch(
           process.env.baseUrl + '/login',
           {
@@ -59,8 +65,11 @@ export default {
             ( data ) => {
               if ( data.error ) throw data.error;
               else {
-                console.log("OK");
-                this.auth_error = false;
+                this.auth_error = false; this.is_loading = false;
+                if ( data.JWT ) {
+                  localStorage.setItem( '_jwt', data.JWT );
+                  this.$router.push('tasks');
+                } else throw 'JWT toke is empty...';
               }
             }
           )
@@ -68,6 +77,7 @@ export default {
           (error) => {
             this.auth_error = true;
             this.error = error;
+            this.is_loading = false;
           }
         )
       }
