@@ -7,15 +7,15 @@
         'task_pri_low' : $props.priority == -1
        }"
   >
-    <template v-if="$props.newest">
+    <template v-if="$props.newest === true">
       <div>
         <input type="text" :style="{ borderColor: new_task.title ? '' : 'red' }" placeholder="Task title" v-model="new_task.title" />
       </div>
-      <div v-if="$props.newest === true">
+      <div>
         priority:<br>
-        Low: <input type="radio" :name="$props.id + '_priority'" v-model="new_task.priority" value="-1" checked/>
-        Middle: <input type="radio" :name="$props.id + '_priority'" v-model="new_task.priority" value="0" />
-        High: <input type="radio" :name="$props.id + '_priority'" v-model="new_task.priority" value="1">
+        Low: <input type="radio" :name="$props.N + '_priority'" v-model="new_task.priority" value="-1" checked/>
+        Middle: <input type="radio" :name="$props.N + '_priority'" v-model="new_task.priority" value="0" />
+        High: <input type="radio" :name="$props.N + '_priority'" v-model="new_task.priority" value="1">
       </div>
       <div>
         <button type="button" class="button-save" :disabled="!( new_task.title && new_task.deadline_date && new_task.deadline_time )" v-on:click="save">SAVE</button>
@@ -68,7 +68,7 @@
 export default {
   name: "Task",
   props: [
-    'id',
+    'N',
     'title',
     'deadline_date',
     'deadline_time',
@@ -80,7 +80,7 @@ export default {
 
   methods : {
     save: function() {
-      console.log( this.new_task.priority );
+      console.log( this.new_task );
       this.$emit(
         'save_task',
         this.new_task
@@ -124,7 +124,7 @@ export default {
   data: function() {
     return {
       new_task : {
-        id : this.id,
+        N : this.N,
         title : null,
         priority : -1,
         deadline_date: "1997-09-19",

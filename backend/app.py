@@ -74,7 +74,7 @@ def api_tasks():
     user_id = json.loads(user.to_json()).get('_id', None)
 
     if user_id and user_id.get('$oid', None):
-        tasks = Tasks.objects(uid=user_id.get('$oid'))
+        tasks = Tasks.objects(uid=user_id.get('$oid')).exclude('id')
         return {
             'tasks': json.loads(tasks.to_json())
         }
@@ -83,6 +83,32 @@ def api_tasks():
             'error': 'Something gonna wrong... The required _id-fields is not found in query set!'
         }
 
+@app.route('/api/tasks/append', methods=['POST'])
+@jwt_required
+@cross_origin()
+def api_tasks_append():
+    user = Users.objects(password=get_jwt_identity()).first()
+    user_id = json.loads(user.to_json()).get('_id', None)
+
+    if user_id and user_id.get('$oid', None):
+        task_data = request.json
+        if not task_data:
+            return Response(
+                response='{"error": "Request body is empty or Content-Type is not valid must by (application/json)"}',
+                status=500,
+                content_type="application/json"
+            )
+
+        task_data.update({'uid': user_id.get('$oid', None)})
+
+        task = Tasks(**task_data); task.save()
+        return {
+            "ok": str(task)
+        }
+    else:
+        return {
+            'error': 'User not found or JWT has been expired!'
+        }
 
 app.run(
     host=os.environ.get('API_HOST'),

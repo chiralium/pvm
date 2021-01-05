@@ -6,9 +6,9 @@
       @close_error_modal="error_close"
     >
     </error>
-    <div v-for="task in tasks" :key="task.id">
+    <div v-for="task in tasks" :key="task.N">
       <task
-        :id="task.id"
+        :N="task.N"
         :title="task.title"
         :deadline_date="task.deadline_date"
         :deadline_time="task.deadline_time"
@@ -47,7 +47,7 @@ export default {
     save_task( new_task ) {
       let new_task_indx = this.tasks.findIndex(
         (e, i, a) => {
-          if ( e.id === new_task.id ) return "hello world";
+          if ( e.N === new_task.N ) return "hello world";
           return false;
         }
       );
@@ -71,7 +71,7 @@ export default {
     },
     add_task() {
       let task_object = {
-          id : this.tasks.length > 0 ? this.tasks[ this.tasks.length - 1].id + 1 : 0,
+          N : this.tasks.length > 0 ? this.tasks[ this.tasks.length - 1].N + 1 : 0,
           title : '---',
           deadline_date : '30.12.2020',
           deadline_time : '00:00',

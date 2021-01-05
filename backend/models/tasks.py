@@ -2,7 +2,7 @@ from .mongodb import *
 
 
 class Tasks(Document):
-    id = IntField(primary_key=True)
+    N = IntField(required=True)
     uid = StringField(required=True)
     title = StringField(max_length=50)
     deadline_date = StringField(max_length=50)
@@ -10,3 +10,4 @@ class Tasks(Document):
     time = IntField()
     stamp = IntField()
     priority = IntField()
+    newest = BooleanField(max_length=50)
