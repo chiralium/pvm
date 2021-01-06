@@ -38,7 +38,7 @@
         >▶</span>
         <span class="task_bar_stop"
               v-bind:class="{ 'sepia_filter' : !is_play_enable }"
-              v-on:click="stop"
+              v-on:click="stop( $props.title )"
         >⏸</span>
       </div>
 
@@ -80,7 +80,6 @@ export default {
 
   methods : {
     save: function() {
-      console.log( this.new_task );
       this.$emit(
         'save_task',
         this.new_task
@@ -99,8 +98,12 @@ export default {
         title
       )
     },
-    stop : function() {
+    stop : function( title ) {
       this.is_play_enable = false;
+      this.$emit(
+        'stop_task',
+        title
+      );
       if ( this.task_timer ) clearInterval( this.task_timer )
     },
 

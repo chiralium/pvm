@@ -18,6 +18,7 @@
         :newest="task.newest"
 
         @start_task="start_task"
+        @stop_task="stop_task"
         @save_task="save_task"
       />
     </div>
@@ -69,6 +70,14 @@ export default {
         title
       )
     },
+
+    stop_task( title ) {
+      this.$emit(
+        'stop_task',
+        title
+      )
+    },
+
     add_task() {
       let task_object = {
           N : this.tasks.length > 0 ? this.tasks[ this.tasks.length - 1].N + 1 : 0,
@@ -114,7 +123,14 @@ export default {
             else if ( data.msg === 'Token has expired' ) {
               localStorage.clear();
               this.$router.push('/');
-            } else this.tasks = data.tasks;
+            } else {
+              this.tasks = data.tasks;
+              // emitting count of tasks to footer-component
+              this.$emit(
+                'tasks_count',
+                this.tasks.length
+              );
+            }
           }
         )
       .catch(
