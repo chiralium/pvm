@@ -7,6 +7,12 @@
         'task_pri_low' : $props.priority == -1
        }"
   >
+    <error
+      :error_name="this.error"
+      v-if="this.error"
+      @close_modal_error="() => { this.error = null }"
+    >
+    </error>
     <template v-if="$props.newest === true">
       <div>
         <input type="text" :style="{ borderColor: new_task.title ? '' : 'red' }" placeholder="Task title" v-model="new_task.title" />
@@ -17,8 +23,18 @@
         Middle: <input type="radio" :name="$props.N + '_priority'" v-model="new_task.priority" value="0" />
         High: <input type="radio" :name="$props.N + '_priority'" v-model="new_task.priority" value="1">
       </div>
+
       <div>
-        <button type="button" class="button-save" :disabled="!( new_task.title && new_task.deadline_date && new_task.deadline_time )" v-on:click="save">SAVE</button>
+        Time (minutes):
+        <input type="number" min="0" v-model="new_task.time" />
+      </div>
+
+      <div>
+        <button type="button" class="button-save"
+                :disabled="!( new_task.title && new_task.deadline_date && new_task.deadline_time && new_task.time )"
+                v-on:click="save">
+          SAVE
+        </button>
       </div>
 
       <div>
@@ -29,11 +45,11 @@
     </template>
     <template v-else>
       <div class="task_title">
-        {{ $props.title }}
+        <a href="javascript: null">{{ $props.title }}</a>
       </div>
       <div class="task_bar">
         <span class="task_bar_play"
-              v-bind:class="{ 'sepia_filter' : is_play_enable }"
+              v-bind:class="{ 'sepia_filter' : is_play_enable || time_is_reached }"
               v-on:click="play( $props.title )"
         >▶</span>
         <span class="task_bar_stop"
@@ -65,8 +81,13 @@
 </template>
 
 <script>
+import Error from './Error.vue';
+
 export default {
   name: "Task",
+  components : {
+    'error' : Error
+  },
   props: [
     'N',
     'title',
@@ -80,15 +101,58 @@ export default {
 
   methods : {
     save: function() {
-      this.$emit(
-        'save_task',
-        this.new_task
+      // convert minutes to seconds
+      this.$set(
+        this.new_task,
+        'time',
+        this.new_task.time * 60
+      );
+
+      fetch(
+        process.env.baseUrl + '/tasks/append',
+        {
+          method : 'POST',
+          headers : {
+            'Authorization' : localStorage.getItem('_jwt'),
+            'Content-Type' : 'application/json'
+          },
+          body : JSON.stringify( this.new_task )
+        }
+      ).then( response => response.json() )
+        .then(
+          ( data ) => {
+            if ( data.error ) throw data.error;
+            else {
+              this.$emit(
+                'save_task',
+                this.new_task
+              );
+            }
+          }
+        )
+      .catch(
+        ( error ) => {
+          this.error = error;
+        }
       )
     },
     play : function( title ) {
+      if (this.is_play_enable || this.time_is_reached) return null;
+
       this.is_play_enable = true;
       this.task_timer = setInterval(
-        () => {
+        (title) => {
+          if ( this.task_stamp >= this.time ) {
+            clearInterval(this.task_timer);
+            this.$emit(
+              'stop_task',
+              title
+            );
+            this.is_play_enable = false;
+            this.time_is_reached = true;
+
+            return null;
+          }
           this.task_stamp = "" + ( parseInt(this.task_stamp) + 1 );
         },
         1000
@@ -130,17 +194,22 @@ export default {
         N : this.N,
         title : null,
         priority : -1,
+        stamp : 0,
+        time : 0,
         deadline_date: "1997-09-19",
         deadline_time: "10:30",
         newest : false
       },
 
       is_play_enable : false,
+      time_is_reached : false,
       task_timer : null,
       task_stamp : this.stamp,
 
       today_date : new Date().toJSON().split('T')[0],
       today_time : new Date().toJSON().split('T')[1],
+
+      error : null
     }
   },
 }
@@ -210,5 +279,6 @@ export default {
   .task_title {
     text-align: left;
     font-size: 9pt;
+    width: 100px;
   }
 </style>
