@@ -86,7 +86,7 @@ import Error from './Error.vue';
 export default {
   name: "Task",
   components : {
-    'error' : Error
+    'error' : Error,
   },
   props: [
     'N',
@@ -209,7 +209,7 @@ export default {
       today_date : new Date().toJSON().split('T')[0],
       today_time : new Date().toJSON().split('T')[1],
 
-      error : null
+      error : null,
     }
   },
 }

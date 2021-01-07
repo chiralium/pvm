@@ -6,6 +6,13 @@
       @close_error_modal="error_close"
     >
     </error>
+
+    <tdesc
+      v-if="!tdesc_is_close"
+      @tdesc_close="tdesc_close"
+    >
+    </tdesc>
+
     <div v-for="task in tasks" :key="task.N">
       <task
         :N="task.N"
@@ -29,17 +36,23 @@
 <script>
 import Task from './Task.vue';
 import Error from "./Error";
+import TDescription from "./TDescription";
 
 export default {
   name: "TasksView",
   components : {
     'task' : Task,
-    'error' : Error
+    'error' : Error,
+    'tdesc' : TDescription
   },
   props: [
     'current_task'
   ],
   methods : {
+    tdesc_close : function () {
+      this.tdesc_is_close = true;
+    },
+
     error_close : function() {
       this.tasks_error = false;
       this.error = '';
@@ -101,7 +114,8 @@ export default {
     return {
       tasks : null,
       tasks_error : false,
-      error : ''
+      error : '',
+      tdesc_is_close : false
     }
   },
   mounted() {
