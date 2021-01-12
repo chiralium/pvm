@@ -13,7 +13,7 @@ jobs:
   build:
     defaults:
       run:
-        working-directory: ../frontend/pvm_client  
+        working-directory: ./frontend/pvm_client  
 
     runs-on: ubuntu-latest
 
